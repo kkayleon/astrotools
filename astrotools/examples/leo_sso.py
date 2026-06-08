@@ -1,8 +1,8 @@
-# Example: QZSS Tundra orbit
+# Example: LEO SSO 
 
 from astrotools.dynamics.twobody import oe_to_rv
 from astrotools.trajectory.trajectory import trajectory
-from astrotools.constants import mu_Earth
+from astrotools.constants import mu_Earth, r_Earth
 from astrotools.epoch import UTCtoJ0, GST, JD, latLongECEF
 from astrotools.plotting import groundTrack
 import numpy as np
@@ -10,20 +10,22 @@ import matplotlib.pyplot as plt
 cos, sin, pi, sqrt = np.cos, np.sin, np.pi, np.sqrt
 
 # Orbit parameters
-a = 42164
-e = 0.075 
-i = np.radians(43.0)
-raan = np.radians(195.0)
-argp = np.radians(270.0)
-theta = np.radians(305.0)
+zp = 510
+e = 0.0 
+a = (zp + r_Earth)/(1 - e)
+print(f"{a}")
+i = np.radians(97.45)
+raan = np.radians(0.0)
+argp = np.radians(0.0)
+theta = np.radians(0.0)
 
 # Epoch initialization
-date = np.array([12, 26, 2009])
+date = np.array([3, 1, 2027])
 timeUTC = np.array([12, 0, 0])
 
 # Setup trajectory propagation for a single orbit w/ 10000 steps
 n = 10000
-T = 1.5 * (2*pi/sqrt(mu_Earth)*a**1.5)
+T = (2*pi/sqrt(mu_Earth)*a**1.5)
 dt = T/n
 
 # Initial state vector
@@ -46,7 +48,7 @@ finalLongitude = long[-1]                                                       
 if startingLongitude < 0: startingLongitude += 360
 elif startingLongitude > 180: startingLongitude -= 360
 else: pass
-if finalLongitude < -180: finalLongitude += 360
+if finalLongitude < 0: finalLongitude += 360
 elif finalLongitude > 180: finalLongitude -= 360
 else: pass
 

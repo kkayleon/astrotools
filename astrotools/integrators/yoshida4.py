@@ -13,7 +13,7 @@ def yoshida4(r, v, dt, func_accel):
     for i in range(4):
         r = r + c[i]*dt*v
         a = func_accel(r)
-        v = v - d[i]*dt*a
+        v = v + d[i]*dt*a
     return r, v
 
 # Propagate trajectory (state vector of position, velocity, and time) 

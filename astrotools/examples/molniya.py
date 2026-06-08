@@ -1,8 +1,8 @@
-# Example: QZSS Tundra orbit
+# Example: Molniya
 
 from astrotools.dynamics.twobody import oe_to_rv
 from astrotools.trajectory.trajectory import trajectory
-from astrotools.constants import mu_Earth
+from astrotools.constants import mu_Earth, r_Earth
 from astrotools.epoch import UTCtoJ0, GST, JD, latLongECEF
 from astrotools.plotting import groundTrack
 import numpy as np
@@ -10,20 +10,22 @@ import matplotlib.pyplot as plt
 cos, sin, pi, sqrt = np.cos, np.sin, np.pi, np.sqrt
 
 # Orbit parameters
-a = 42164
-e = 0.075 
-i = np.radians(43.0)
-raan = np.radians(195.0)
+zp = 500
+e = 0.74
+a = (zp + r_Earth)/(1 - e)
+
+i = np.radians(63.43)
+raan = np.radians(0.0)
 argp = np.radians(270.0)
-theta = np.radians(305.0)
+theta = np.radians(0.0)
 
 # Epoch initialization
-date = np.array([12, 26, 2009])
+date = np.array([1, 1, 2022])
 timeUTC = np.array([12, 0, 0])
 
 # Setup trajectory propagation for a single orbit w/ 10000 steps
 n = 10000
-T = 1.5 * (2*pi/sqrt(mu_Earth)*a**1.5)
+T = (2*pi/sqrt(mu_Earth)*a**1.5)
 dt = T/n
 
 # Initial state vector
@@ -62,4 +64,3 @@ print(f"Final latitude:                      {finalLatitude:.3f} deg")
 print(f"Final longitude:                     {finalLongitude:.3f} deg")
 groundTrack(traj,theta_G)
 plt.show()
-
