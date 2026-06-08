@@ -32,7 +32,8 @@ dt = T/n
 r0, v0 = oe_to_rv(a, e, i, raan, argp, theta, mu_Earth)
 
 # Propagate trajectory
-traj = trajectory(r0, v0, n, dt, perturbation=False)
+solver = 'dopr853'
+traj = trajectory(r0, v0, n, dt, perturbation=False, solverType=solver)
 
 # Sidereal time parameters
 J0 = UTCtoJ0(date)
@@ -53,8 +54,10 @@ elif finalLongitude > 180: finalLongitude -= 360
 else: pass
 
 # Output
+print(f"-----------------------------------------------------------------")
+print(f"Solver type:                         {solver}"), print(f"")
 print(f"Semi-major axis (a):                 {a:.3f} km")
-print(f"Orbital period (T):                  {T:.3f} seconds")
+print(f"Orbital period (T):                  {T:.3f} seconds"), print(f"")
 print(f"Initial epoch:                       {date[0]:02d}/{date[1]:02d}/{date[2]:02d} {timeUTC[0]:02d}:{timeUTC[1]:02d}:{timeUTC[2]:02d} UTC")
 print(f"Julian date at epoch:                {julian_date}")
 print(f"Greenwich sidereal time (epoch):     {np.rad2deg(theta_G):.3f} deg")
@@ -62,5 +65,6 @@ print(f"Starting latitude:                   {startingLatitude:.3f} deg")
 print(f"Starting longitude:                  {startingLongitude:.3f} deg")
 print(f"Final latitude:                      {finalLatitude:.3f} deg")
 print(f"Final longitude:                     {finalLongitude:.3f} deg")
+print(f"-----------------------------------------------------------------")
 groundTrack(traj,theta_G)
 plt.show()
