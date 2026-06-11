@@ -1,7 +1,6 @@
 # 4th-order Yoshida symplectic integrator
 
 import numpy as np
-cos, sin, pi, sqrt = np.cos, np.sin, np.pi, np.sqrt
 
 # Yoshida 4th-order symplectic integrator coefficients
 beta = 2.0**(1/3)

@@ -1,15 +1,21 @@
-# Dormand-Prince 8th-order (from scipy.integrate)
+# Trajectory propagation for (circular restricted three-body)
 
-from scipy.integrate import solve_ivp
+# No yoshida4 implementation yet -> using DOPR853
+
+from astrotools.dynamics.cr3bp import acceleration
 import numpy as np
+from scipy.integrate import solve_ivp
 
-# Propagate trajectory 
-def propagate(r0, v0, n, dt, func_accel):
+# CR3BP Acceleration
+func_accel_CR3BP = lambda r, v: acceleration(r, v)
+
+# Integrator wrapper for CR3BP trajectory propagation
+def propagate_dopr853_cr3bp(r0, v0, n, dt, func_accel):
     # dydt = f(t,y) input for DOPR853 solver
     def f(t,y):
         r = y[:3]
         v = y[3:]
-        a = func_accel(r)
+        a = func_accel(r,v)
         # Input r, v => Output dr/dt, dv/dt (v, a)
         return np.concatenate([v, a])
     
@@ -29,3 +35,8 @@ def propagate(r0, v0, n, dt, func_accel):
     t = sol.t.reshape(-1, 1)     # 1D array to "unknown" rows by 1 column (column vector shape)
 
     return np.hstack([r, v, t])
+
+
+# Trajectory propagation for CR3BP
+def trajectory(r0, v0, n, dt):
+    return propagate_dopr853_cr3bp(r0, v0, n, dt, func_accel_CR3BP)
