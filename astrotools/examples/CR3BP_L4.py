@@ -18,8 +18,13 @@ trajectory = cr3bp_trajectory.trajectory(r0, v0, n, dt)
 # Jacobi constant along trajectory
 jacobi_constants = np.array([jacobi_constant(state[:3], state[3:6]) for state in trajectory])
 
+# Output
+print(f"-----------------------------------------------------------------"), print(f"")
+print(f"Jacobi constant at initial state: {jacobi_constants[0]:.6f}"), print(f"")
+print(f"-----------------------------------------------------------------")
 
-# Plots
+# Plotting
+
 # Trajectory in rotating frame
 fig, ax = plt.subplots(figsize=(14, 7))
 ax.plot(trajectory[:,0], trajectory[:,1])
