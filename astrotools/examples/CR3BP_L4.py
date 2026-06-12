@@ -4,6 +4,7 @@
 from astrotools.dynamics.cr3bp import jacobi_constant, pi1, pi2
 from astrotools.trajectory import cr3bp_trajectory
 from astrotools.points import l_points
+from astrotools.plotting import cr3bp_orbit
 import matplotlib.pyplot as plt
 import numpy as np
 cos, sin, sqrt = np.cos, np.sin, np.sqrt
@@ -35,33 +36,5 @@ print(f"-----------------------------------------------------------------"), pri
 # Plotting
 
 # Jacobi constant conservation
-fig2, ax2 = plt.subplots(figsize=(14, 7))
-jacobi_constant_diff = jacobi_constants - jacobi_constants[0]
-t = trajectory[:,6]
-ax2.plot(t, jacobi_constant_diff)
-ax2.set_xlabel('Time (non-dim)')
-ax2.set_ylabel('C')
-ax2.set_title('Jacobi Constant Conservation')
-ax2.grid(True)
-
-# Trajectory in rotating frame
-# Note that this plots full frame but can be adjusted xlim/ylim to show around L4 
-fig, ax = plt.subplots(figsize=(14, 7))
-names = ['L1', 'L2', 'L3', 'L4', 'L5']
-colors = ['red', 'red', 'red', 'green', 'green']
-for i, (name, color) in enumerate(zip(names, colors)):
-    ax.scatter(libration_points[i][0], libration_points[i][1], color=color, s=50, zorder=5)
-    ax.annotate(name, (libration_points[i][0], libration_points[i][1]), textcoords="offset points", xytext=(5,5))
-ax.scatter(-pi2, 0, color='blue', s=100, zorder=5, label='Earth')
-ax.scatter(pi1, 0, color='gray', s=30, zorder=5, label='Moon')
-ax.plot(trajectory[:,0], trajectory[:,1], label='Trajectory')
-ax.legend()
-ax.set_xlabel('x (non-dim)')
-ax.set_ylabel('y (non-dim)')
-ax.set_title('Trajectory in Rotating Frame')
-ax.set_xlim(-1.5, 1.5)
-ax.set_ylim(-1.2, 1.2)
-ax.grid(True)
-
-plt.tight_layout()
+cr3bp_orbit(trajectory)
 plt.show()

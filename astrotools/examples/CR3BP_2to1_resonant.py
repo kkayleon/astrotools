@@ -5,6 +5,7 @@
 from astrotools.dynamics.cr3bp import jacobi_constant, pi1, pi2
 from astrotools.trajectory import cr3bp_trajectory
 from astrotools.points import l_points
+from astrotools.plotting import cr3bp_orbit
 import matplotlib.pyplot as plt
 import numpy as np
 cos, sin, sqrt = np.cos, np.sin, np.sqrt
@@ -34,22 +35,5 @@ print(f"Jacobi constant: {jacobi_constants[0]:.6f}"), print(f"")
 print(f"-----------------------------------------------------------------"), print(f"")
 
 # Plotting trajectory in rotating frame
-fig, ax = plt.subplots(figsize=(14, 7))
-names = ['L1', 'L2', 'L3', 'L4', 'L5']
-colors = ['red', 'red', 'red', 'green', 'green']
-for i, (name, color) in enumerate(zip(names, colors)):
-    ax.scatter(libration_points[i][0], libration_points[i][1], color=color, s=50, zorder=5)
-    ax.annotate(name, (libration_points[i][0], libration_points[i][1]), textcoords="offset points", xytext=(5,5))
-ax.scatter(-pi2, 0, color='blue', s=100, zorder=5, label='Earth')
-ax.scatter(pi1, 0, color='gray', s=30, zorder=5, label='Moon')
-ax.plot(trajectory[:,0], trajectory[:,1], label='Trajectory')
-ax.legend()
-ax.set_xlabel('x (non-dim)')
-ax.set_ylabel('y (non-dim)')
-ax.set_title('2:1 Resonant Trajectory')
-ax.set_xlim(-1.5, 1.5)
-ax.set_ylim(-1.2, 1.2)
-ax.grid(True)
-
-plt.tight_layout()
+cr3bp_orbit(trajectory)
 plt.show()
