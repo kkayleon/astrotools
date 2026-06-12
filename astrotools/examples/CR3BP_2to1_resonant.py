@@ -1,5 +1,6 @@
-# Example: Circular restricted 3-body dynamics around Earth-Moon L4
-# !! Analysis done in nondimensional units !!
+# Example: Circular restricted 3-body dynamics for a 2:1 resonant orbit
+# Reference: arxiv.org/pdf/2311.10252
+# 2:1 Resonant orbit initial conditions from Appendix B, Table B3
 
 from astrotools.dynamics.cr3bp import jacobi_constant, pi1, pi2
 from astrotools.trajectory import cr3bp_trajectory
@@ -9,13 +10,13 @@ import numpy as np
 cos, sin, sqrt = np.cos, np.sin, np.sqrt
 
 # Initial conditions
-perturb_r = np.array([0.015, 0.0, 0.0])
-r0 = np.array([0.5 - pi2, sqrt(3)/2, 0.0]) + perturb_r
-v0 = np.array([0.0, 0.0, 0.0])
+r0 = np.array([0.9519486347314083, 0.0, 0.0])
+v0 = np.array([0.0, -0.952445273435512, 0.0])
 
 # Propagate trajectory
-n = 10000
-dt = 0.01
+T = 6.45        # Nondimensional period
+n = 1000
+dt = T/n
 trajectory = cr3bp_trajectory.trajectory(r0, v0, n, dt)
 
 # Jacobi constant along trajectory
@@ -29,23 +30,10 @@ print(f"")
 print(f"-----------------------------------------------------------------"), print(f"")
 for i, name in enumerate(['L1', 'L2', 'L3', 'L4', 'L5']):
     print(f"{name}: [{libration_points[i][0]:.6f}, {libration_points[i][1]:.6f}, {libration_points[i][2]:.6f}]")
-print(f"Jacobi constant at initial state: {jacobi_constants[0]:.6f}"), print(f"")
+print(f"Jacobi constant: {jacobi_constants[0]:.6f}"), print(f"")
 print(f"-----------------------------------------------------------------"), print(f"")
 
-# Plotting
-
-# Jacobi constant conservation
-fig2, ax2 = plt.subplots(figsize=(14, 7))
-jacobi_constant_diff = jacobi_constants - jacobi_constants[0]
-t = trajectory[:,6]
-ax2.plot(t, jacobi_constant_diff)
-ax2.set_xlabel('Time (non-dim)')
-ax2.set_ylabel('C')
-ax2.set_title('Jacobi Constant Conservation')
-ax2.grid(True)
-
-# Trajectory in rotating frame
-# Note that this plots full frame but can be adjusted xlim/ylim to show around L4 
+# Plotting trajectory in rotating frame
 fig, ax = plt.subplots(figsize=(14, 7))
 names = ['L1', 'L2', 'L3', 'L4', 'L5']
 colors = ['red', 'red', 'red', 'green', 'green']
@@ -58,7 +46,7 @@ ax.plot(trajectory[:,0], trajectory[:,1], label='Trajectory')
 ax.legend()
 ax.set_xlabel('x (non-dim)')
 ax.set_ylabel('y (non-dim)')
-ax.set_title('Trajectory in Rotating Frame')
+ax.set_title('2:1 Resonant Trajectory')
 ax.set_xlim(-1.5, 1.5)
 ax.set_ylim(-1.2, 1.2)
 ax.grid(True)
