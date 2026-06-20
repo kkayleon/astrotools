@@ -14,7 +14,7 @@ r0 = np.array([0.8027692908754149, 0.0, 0.0])
 v0 = np.array([0.0, 0.33765564334938736, 0.0])
 
 # Propagate trajectory
-T = 6.45        # Nondimensional period
+T = 3.225        # Nondimensional period
 n = 1000
 dt = T/n
 trajectory = cr3bp_trajectory.trajectory(r0, v0, n, dt)

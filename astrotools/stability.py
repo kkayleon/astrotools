@@ -24,10 +24,10 @@ def jacobian(r):
     eye3 = np.eye(3)
     U = hessian(r)
     coriolis = np.array([[0, 2, 0], [-2, 0, 0], [0, 0, 0]])
-    return np.block([[zero, eye3], [-U, coriolis]])
+    return np.block([[zero, eye3], [U, coriolis]])
 
 # Propagation of STM & final STM
-def propagate_stm(r0, v0, dt, n):
+def propagate_stm(r0, v0, n, dt):
     # dydt for state & STM
     def f(t,y):
         # Initial state & STM
@@ -62,3 +62,25 @@ def propagate_stm(r0, v0, dt, n):
 
     return trajectory, Phi_T
 
+# Single-shooting method: Planar
+def single_shoot_planar(state0, dt, n, tol=1E-10, max_iteration=20):
+    # Newton's method loop
+    for k in range(max_iteration):
+        traj, Phi_T = propagate_stm(state0[:3], state0[3:], n, dt)  
+        statef = traj[-1,:6]
+
+        # Residual conditions to be driven within tolerable error
+        F = statef - state0
+        F_red = F[3]
+        error = np.linalg.norm(F_red)  
+        if error < tol:
+            return state0, traj, Phi_T, k
+        
+        # Residual calculations to drive next iteration towards tolerable error
+        J_red = Phi_T[3,4]
+        delta = -F_red/J_red       
+        state0[4] += delta
+
+    print("Did not converge within", tol, "in", max_iteration, "iterations")
+    # None if Newton's method does not converge
+    return None, None, None, None
