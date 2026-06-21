@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 
 # Initial conditions (slightly adjusted) from astrotools/examples/CR3BP_L1_lyapunov.py
 r0 = np.array([0.80, 0.0, 0.0])
-v0 = np.array([0.0, 0.34, 0.0])
+v0 = np.array([0.0, 0.33, 0.0])
 T = 3.225
 n = 1000
 dt = T/n
