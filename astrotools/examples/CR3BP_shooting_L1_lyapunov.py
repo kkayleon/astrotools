@@ -22,7 +22,9 @@ max_iterations = 20
 
 state0 = np.concatenate([r0, v0])
 state0_corr, traj, Phi_T, k = single_shoot_planar(state0, dt, n_half, tol, max_iterations)
-print("Converged within", tol, "in", k, "iterations")
+print(f"Converged within", tol, "in", k, "iterations")
+print(f"Initial state:", np.concatenate([r0, v0]))
+print(f"Corrected state:", state0_corr)
 
 # Construct full trajectory via mirroring
 traj_mirror = traj[:, :6].copy()*np.array([1, -1, -1, -1, 1, 1])
