@@ -33,30 +33,30 @@ Dependencies: `numpy`, `scipy`, `matplotlib`
 
 ```
 astrotools/
-├── constants.py             # Physical/gravitational constants (Earth, Moon)
-├── epoch.py                 # Julian date, GST, ECI->ECEF
-├── plotting.py              # Ground track & CR3BP orbit plots
-├── points.py                # Lagrange/libration point solver
-├── stability.py             # STM propagation, single-shooting correction
+├── constants.py                         # Physical/gravitational constants (Earth, Moon)
+├── epoch.py                             # Julian date, GST, ECI->ECEF
+├── plotting.py                          # Ground track & CR3BP orbit plots
+├── points.py                            # Lagrange/libration point solver
+├── stability.py                         # STM propagation, single-shooting correction
 ├── dynamics/
-│   ├── twobody.py           # 2BP acceleration, orbital elements <-> state vector
-│   ├── j2.py                # 2BP + J2 perturbation
-│   └── cr3bp.py             # CR3BP acceleration, Jacobi constant
+│   ├── twobody.py                       # 2BP acceleration, orbital elements <-> state vector
+│   ├── j2.py                            # 2BP + J2 perturbation
+│   └── cr3bp.py                         # CR3BP acceleration, Jacobi constant
 ├── integrators/
-│   ├── yoshida4.py           # Symplectic integrator
-│   └── dopr853.py            # DOP853 (via scipy)
+│   ├── yoshida4.py                      # Symplectic integrator
+│   └── dopr853.py                       # DOP853 (via scipy)
 ├── trajectory/
-│   ├── trajectory.py         # R2BP propagation wrapper
-│   └── cr3bp_trajectory.py   # CR3BP propagation wrapper
+│   ├── trajectory.py                    # R2BP propagation wrapper
+│   └── cr3bp_trajectory.py              # CR3BP propagation wrapper
 └── examples/
-    ├── R2BP_leo_sso.py               # LEO sun-synchronous orbit + ground track
-    ├── R2BP_molniya.py               # Molniya orbit + ground track
-    ├── R2BP_qzss_tundra.py           # QZSS Tundra orbit + ground track
-    ├── CR3BP_L4.py                   # Perturbed L4 trajectory
-    ├── CR3BP_2to1_resonant.py        # 2:1 resonant orbit
-    ├── CR3BP_3to1_resonant.py        # 3:1 resonant orbit
-    ├── CR3BP_L1_lyapunov.py          # L1 Lyapunov orbit
-    └── CR3BP_shooting_L1_lyapunov.py # Single-shooting correction for L1 Lyapunov orbit
+    ├── R2BP_leo_sso.py                  # LEO sun-synchronous orbit + ground track
+    ├── R2BP_molniya.py                  # Molniya orbit + ground track
+    ├── R2BP_qzss_tundra.py              # QZSS Tundra orbit + ground track
+    ├── CR3BP_L4.py                      # Perturbed L4 trajectory
+    ├── CR3BP_2to1_resonant.py           # 2:1 resonant orbit
+    ├── CR3BP_3to1_resonant.py           # 3:1 resonant orbit
+    ├── CR3BP_L1_lyapunov.py             # L1 Lyapunov orbit
+    └── CR3BP_shooting_L1_lyapunov.py    # Single-shooting correction for L1 Lyapunov orbit
 ```
 
 ---
