@@ -5,7 +5,7 @@
 from astrotools.dynamics.cr3bp import jacobi_constant, pi1, pi2
 from astrotools.trajectory import cr3bp_trajectory
 from astrotools.points import l_points
-from astrotools.plotting import cr3bp_orbit
+from astrotools.plotting import cr3bp_orbit2d
 import matplotlib.pyplot as plt
 import numpy as np
 cos, sin, sqrt = np.cos, np.sin, np.sqrt
@@ -35,5 +35,5 @@ print(f"Jacobi constant: {jacobi_constants[0]:.6f}"), print(f"")
 print(f"-----------------------------------------------------------------"), print(f"")
 
 # Plotting trajectory in rotating frame
-cr3bp_orbit(trajectory)
+cr3bp_orbit2d(trajectory)
 plt.show()
