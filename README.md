@@ -56,7 +56,8 @@ astrotools/
     ├── CR3BP_2to1_resonant.py           # 2:1 resonant orbit
     ├── CR3BP_3to1_resonant.py           # 3:1 resonant orbit
     ├── CR3BP_L1_lyapunov.py             # L1 Lyapunov orbit
-    └── CR3BP_shooting_L1_lyapunov.py    # Single-shooting correction for L1 Lyapunov orbit
+    ├── CR3BP_shooting_L1_lyapunov.py    # Single-shooting correction for L1 Lyapunov orbit
+    └── CR3BP_shooting_halo.py           # Single-shooting correction for an L1 halo orbit
 ```
 
 ---
@@ -218,6 +219,43 @@ Jacobi constant: -1.362611
 ![3:1 Resonant Orbit in barycentered-rotating frame](figures/3to1_resonant.png)
 
 
+### CR3BP L1 halo orbit (single shooting)
+
+This example applies the event-based halo corrector to an Earth–Moon CR3BP initial guess. The corrector varies the initial `x` and `vy` components until the trajectory reaches an `y = 0` crossing with `vx = vz = 0` [5].
+
+```python
+from astrotools.stability import propagate_stm, single_shoot_halo
+from astrotools.plotting import cr3bp_orbit_3view
+import matplotlib.pyplot as plt
+import numpy as np
+
+# Initial guess: [x, y, z, vx, vy, vz] in nondimensional CR3BP units
+state0 = np.array([0.85, 0.0, 0.173890, 0.0, 0.262114, 0.0])
+
+state0_corrected, statef, phi_t, iterations, half_period = single_shoot_halo(
+    state0.copy(), direction=-1, t_max=7
+)
+
+if state0_corrected is None:
+    raise RuntimeError("Halo-orbit differential correction did not converge.")
+
+print(f"Converged in {iterations} iterations")
+print(f"Corrected initial state: {state0_corrected}")
+
+# Propagate a full period for visualization.
+n = 2000
+trajectory, _ = propagate_stm(
+    state0_corrected[:3], state0_corrected[3:], n, 2 * half_period / n
+)
+
+cr3bp_orbit_3view(
+    trajectory,
+    bounds_xy=[0.7, 1.3, -0.3, 0.3],
+    bounds_z=[-0.3, 0.3],
+)
+plt.show()
+```
+
 See `astrotools/examples/` for other full runnable example scripts.
 
 ---
@@ -230,6 +268,8 @@ See `astrotools/examples/` for other full runnable example scripts.
 ---
 
 ## References
+[5] Fujiwara, M., & Ozaki, N. (2026). *Stochastic Differential Dynamic Programming for Trajectory Optimization under Partial Observability*. arXiv:2605.07529. https://arxiv.org/abs/2605.07529
+
 [1] Koon, W.S., Lo, M.W., Marsden, J.E., Ross, S.D. (2011). *Dynamical Systems, the Three-Body Problem and Space Mission Design*. https://www.cds.caltech.edu/~marsden/volume/missiondesign/KoLoMaRo_DMissionBook_2011-04-25.pdf
 
 [2] Curtis, H.D. (2021). *Orbital Mechanics for Engineering Students*. 4th ed. Butterworth-Heinemann.

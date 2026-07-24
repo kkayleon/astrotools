@@ -1,8 +1,6 @@
 # Example: Single Shooting method for halo orbit
 
 from astrotools.stability import single_shoot_halo, propagate_stm
-from astrotools.dynamics.cr3bp import pi1, pi2
-from astrotools.points import l_points
 from astrotools.plotting import cr3bp_orbit_3view
 import numpy as np
 import matplotlib.pyplot as plt
@@ -17,7 +15,7 @@ state0_corr, statef, Phi_T, k, tf = single_shoot_halo(state0, -1, 7)
 if state0_corr is None:
     print("Newton's method did not converge for the initial condition")
 else:
-    print(f"Convergeed in {k} iterations")
+    print(f"Converged in {k} iterations")
     print(f"Corrected initial state: {state0_corr}")
 
     # Define step/step sizes
