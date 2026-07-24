@@ -11,9 +11,9 @@ A Python toolkit for astrodynamics — orbital propagation, coordinate transform
 - **Two-body propagation (R2BP)**, with optional J2 perturbation
 - **CR3BP dynamics** — equations of motion, Jacobi constant, Lagrange/libration points
 - **Numerical integrators** — 4th-order Yoshida symplectic, Dormand-Prince 8(5,3) (DOP853)
-- **Differential correction** — state transition matrix (STM) propagation and planar single-shooting
+- **Differential correction** — state transition matrix (STM) propagation and planar/halo single-shooting
 - **Epoch & frame utilities** — Julian date, Greenwich sidereal time, ECI → ECEF transforms
-- **Plotting** — ground tracks and CR3BP rotating-frame trajectories
+- **Plotting** — ground tracks, CR3BP rotating-frame trajectories, and 3-view (XY/YZ/XZ) projections for non-planar orbits
 
 ---
 
@@ -37,7 +37,7 @@ astrotools/
 ├── epoch.py                             # Julian date, GST, ECI->ECEF
 ├── plotting.py                          # Ground track & CR3BP orbit plots
 ├── points.py                            # Lagrange/libration point solver
-├── stability.py                         # STM propagation, single-shooting correction
+├── stability.py                         # STM propagation, planar/halo single-shooting correction
 ├── dynamics/
 │   ├── twobody.py                       # 2BP acceleration, orbital elements <-> state vector
 │   ├── j2.py                            # 2BP + J2 perturbation
@@ -167,7 +167,7 @@ Final longitude:                     138.806 deg
 from astrotools.dynamics.cr3bp import jacobi_constant, pi1, pi2
 from astrotools.trajectory import cr3bp_trajectory
 from astrotools.points import l_points
-from astrotools.plotting import cr3bp_orbit
+from astrotools.plotting import cr3bp_orbit2d
 import matplotlib.pyplot as plt
 import numpy as np
 cos, sin, sqrt = np.cos, np.sin, np.sqrt
@@ -197,7 +197,7 @@ print(f"Jacobi constant: {jacobi_constants[0]:.6f}"), print(f"")
 print(f"-----------------------------------------------------------------"), print(f"")
 
 # Plotting trajectory in rotating frame
-cr3bp_orbit(trajectory)
+cr3bp_orbit2d(trajectory)
 plt.show()
 ```
 
@@ -224,37 +224,50 @@ Jacobi constant: -1.362611
 This example applies the event-based halo corrector to an Earth–Moon CR3BP initial guess. The corrector varies the initial `x` and `vy` components until the trajectory reaches an `y = 0` crossing with `vx = vz = 0` [5].
 
 ```python
-from astrotools.stability import propagate_stm, single_shoot_halo
+# Example: Single Shooting method for halo orbit
+
+from astrotools.stability import single_shoot_halo, propagate_stm
 from astrotools.plotting import cr3bp_orbit_3view
-import matplotlib.pyplot as plt
 import numpy as np
+import matplotlib.pyplot as plt
 
-# Initial guess: [x, y, z, vx, vy, vz] in nondimensional CR3BP units
-state0 = np.array([0.85, 0.0, 0.173890, 0.0, 0.262114, 0.0])
+# Initial conditions (Table 7 "Target", https://arxiv.org/pdf/2605.07529)
+r0 = np.array([0.85, 0.0, 0.173890])
+v0 = np.array([0.0, 0.262114, 0.0])
+state0 = np.concatenate([r0, v0])
 
-state0_corrected, statef, phi_t, iterations, half_period = single_shoot_halo(
-    state0.copy(), direction=-1, t_max=7
-)
+# Single shoot method call
+state0_corr, statef, Phi_T, k, tf = single_shoot_halo(state0, -1, 7)
+if state0_corr is None:
+    print("Newton's method did not converge for the initial condition")
+else:
+    print(f"Converged in {k} iterations")
+    print(f"Corrected initial state: {state0_corr}")
 
-if state0_corrected is None:
-    raise RuntimeError("Halo-orbit differential correction did not converge.")
+    # Define step/step sizes
+    n = 2000
+    dt = 2*tf/n
 
-print(f"Converged in {iterations} iterations")
-print(f"Corrected initial state: {state0_corrected}")
+    # Full trajectory propagation
+    traj, __ = propagate_stm(state0_corr[:3], state0_corr[3:], n, dt)
 
-# Propagate a full period for visualization.
-n = 2000
-trajectory, _ = propagate_stm(
-    state0_corrected[:3], state0_corrected[3:], n, 2 * half_period / n
-)
-
-cr3bp_orbit_3view(
-    trajectory,
-    bounds_xy=[0.7, 1.3, -0.3, 0.3],
-    bounds_z=[-0.3, 0.3],
-)
-plt.show()
+    # 3-view plot (Match w/ Fig. 9 "Target" trajectory)
+    cr3bp_orbit_3view(traj, bounds_xy=[0.7, 1.3, -0.3, 0.3], bounds_z=[-0.3, 0.3])
+    plt.show()
 ```
+ 
+### Output
+```
+Converged in 3 iterations
+Corrected initial state: [0.84871017 0.         0.17389    0.         0.26350093 0.        ]
+```
+ 
+### Plotting (3-view: XY / YZ / XZ)
+ 
+`cr3bp_orbit_3view` propagates the corrected initial state forward over a full period (`2*tf`) and projects the resulting trajectory into all three coordinate planes, with the Earth and Moon annotated in the XY and XZ panels and the libration points annotated in the XY panel.
+ 
+![L1 Halo Orbit — single-shooting correction, 3-view projection](figures/shooting_halo.png)
+
 
 See `astrotools/examples/` for other full runnable example scripts.
 
@@ -262,13 +275,11 @@ See `astrotools/examples/` for other full runnable example scripts.
 
 ## Roadmap
 
-- [ ] Differential corrector for non-planar (3D) orbits
 - [ ] Patched-conic / transfer trajectory tools
 
 ---
 
 ## References
-[5] Fujiwara, M., & Ozaki, N. (2026). *Stochastic Differential Dynamic Programming for Trajectory Optimization under Partial Observability*. arXiv:2605.07529. https://arxiv.org/abs/2605.07529
 
 [1] Koon, W.S., Lo, M.W., Marsden, J.E., Ross, S.D. (2011). *Dynamical Systems, the Three-Body Problem and Space Mission Design*. https://www.cds.caltech.edu/~marsden/volume/missiondesign/KoLoMaRo_DMissionBook_2011-04-25.pdf
 
@@ -277,3 +288,5 @@ See `astrotools/examples/` for other full runnable example scripts.
 [3] Patel, M., Shimane, Y., Lee, H.W., Ho, K. (2023). *Cislunar Satellite Constellation Design Via Integer Linear Programming*. https://arxiv.org/abs/2311.10252
 
 [4] Yoshida, H. (1990). "Construction of higher order symplectic integrators." *Physics Letters A*, 150(5–7), 262–268.
+
+[5] Fujiwara, M., & Ozaki, N. (2026). *Stochastic Differential Dynamic Programming for Trajectory Optimization under Partial Observability*. arXiv:2605.07529. https://arxiv.org/abs/2605.07529
