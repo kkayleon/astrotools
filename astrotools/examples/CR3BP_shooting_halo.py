@@ -2,6 +2,7 @@
 
 from astrotools.stability import single_shoot_halo, propagate_stm
 from astrotools.plotting import cr3bp_orbit_3view
+from astrotools.dynamics.cr3bp import jacobi_constant
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -27,4 +28,10 @@ else:
 
     # 3-view plot (Match w/ Fig. 9 "Target" trajectory)
     cr3bp_orbit_3view(traj, bounds_xy=[0.7, 1.3, -0.3, 0.3], bounds_z=[-0.3, 0.3])
-    plt.show()
+
+# Jacobi constant conservation check
+C_i = jacobi_constant(state0_corr[:3], state0_corr[3:])
+C_f = jacobi_constant(statef[:3], statef[3:])
+print(f"Jacobi constant difference: {abs(C_i - C_f):.12f}")
+
+plt.show()
